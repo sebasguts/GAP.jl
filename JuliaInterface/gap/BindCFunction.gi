@@ -49,7 +49,7 @@ InstallGlobalFunction( JuliaSetGAPFuncAsJuliaObjFunc,
 
 BindGlobal( "AddGapJuliaFuncs",
   function( )
-    local all_necessary_funcs, current_name, current_func;
+    local all_necessary_funcs, current_name, current_func, bind_global_temp;
 
     all_necessary_funcs := Filtered( NamesGVars(),
       function( i )
@@ -68,5 +68,16 @@ BindGlobal( "AddGapJuliaFuncs",
         current_func := ValueGlobal( current_name );
         __JuliaSetGAPFuncAsJuliaObjFunc( current_func, current_name );
     od;
+
+    ## Now we set BIND_GLOBAL
+    MakeReadWriteGlobal( "BIND_GLOBAL" );
+    bind_global_temp := BIND_GLOBAL;
+    BIND_GLOBAL := function( name, val )
+        if IsFunction( val ) then
+            __JuliaSetGAPFuncAsJuliaObjFunc( val, name );
+        fi;
+        bind_global_temp( name, val );
+    end;
+    MakeReadOnlyGlobal( "BIND_GLOBAL" );
 
 end );
