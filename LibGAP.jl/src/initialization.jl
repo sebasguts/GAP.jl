@@ -15,21 +15,23 @@ error_handler_func = @cfunction(error_handler,Cvoid,(Ptr{Char},))
 const pkgdir = realpath(dirname(@__FILE__))
 
 function initialize( argv::Array{String,1}, env::Array{String,1} )
-    ccall( (:GAP_set_error_handler, "libgap")
-            , Cvoid
-            , (Ptr{Cvoid},)
-            , error_handler_func)
-    ccall( (:GAP_initialize, "libgap")
+    # ccall( (:GAP_set_error_handler, "libgap")
+    #         , Cvoid
+    #         , (Ptr{Cvoid},)
+    #         , error_handler_func)
+    ccall( (:GAP_Initialize, "libgap")
            , Cvoid
-           , (Int32, Ptr{Ptr{UInt8}},Ptr{Ptr{UInt8}})
+           , (Int32, Ptr{Ptr{UInt8}},Ptr{Ptr{UInt8}},Ptr{Cvoid},Ptr{Cvoid})
            , length(argv)
            , argv
-           , env )
-    ccall( (:GAP_EvalString, "libgap")
-           , Ptr{Cvoid}
-           , (Ptr{UInt8},)
-           , "LoadPackage(\"JuliaInterface\");" )
-    include( pkgdir * "/libgap.jl")
+           , env
+           , C_NULL
+           , error_handler_func )
+    # ccall( (:GAP_EvalString, "libgap")
+    #        , Ptr{Cvoid}
+    #        , (Ptr{UInt8},)
+    #        , "LoadPackage(\"JuliaInterface\");" )
+    # include( pkgdir * "/libgap.jl")
 end
 
 function finalize( )
