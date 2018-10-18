@@ -53,7 +53,7 @@ end
 
 module GAP
 
-#import Base: +
+import Base: getproperty
 
 import Main.ForeignGAP: MPtr
 
@@ -112,7 +112,22 @@ function(func::GapFunc)(args...)
     return result
 end
 
-baremodule GAPFuncs
+struct GAPFuncType
+    funcs::Dict{Symbol,MPtr}
+end
+
+GAPFuncs = GAPFuncType(Dict{Symbol,MPtr}())
+
+function getproperty(funcobj::GAPFuncType,name::Symbol)
+    if haskey(funcobj.funcs,name)
+        return funcobj.funcs[name]
+    end
+    name_string = string(name)
+    variable_address = ccall(gap_GVarName,UInt64,(String,),name_string)
+    variable_ptr = ccall(gap_ValGVar,MPtr,(UInt64,),variable_address)
+    current_func = GapFunc(variable_ptr)
+    funcobj.funcs[name] = current_func
+    return current_func
 end
 
 

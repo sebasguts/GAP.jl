@@ -70,4 +70,6 @@ void JuliaInitializeGAPFunctionPointers()
     INITIALIZE_JULIA_CPOINTER(NewJuliaObj);
 
     INITIALIZE_JULIA_CPOINTER(call_gap_func);
+    INITIALIZE_JULIA_CPOINTER(ValGVar);
+    INITIALIZE_JULIA_CPOINTER(GVarName);
 }
