@@ -249,11 +249,13 @@ static void HandleJuliaCFuncException(int narg)
 static Obj DoCallJuliaCFunc0Arg(Obj func)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    JL_TRY
+    {
         result = function();
     }
-    JL_CATCH {
+    JL_CATCH
+    {
         HandleJuliaCFuncException(0);
     }
     return result;
@@ -262,11 +264,13 @@ static Obj DoCallJuliaCFunc0Arg(Obj func)
 static Obj DoCallJuliaCFunc1Arg(Obj func, Obj arg1)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    JL_TRY
+    {
         result = function(arg1);
     }
-    JL_CATCH {
+    JL_CATCH
+    {
         HandleJuliaCFuncException(1);
     }
     return result;
@@ -275,11 +279,13 @@ static Obj DoCallJuliaCFunc1Arg(Obj func, Obj arg1)
 static Obj DoCallJuliaCFunc2Arg(Obj func, Obj arg1, Obj arg2)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    JL_TRY
+    {
         result = function(arg1, arg2);
     }
-    JL_CATCH {
+    JL_CATCH
+    {
         HandleJuliaCFuncException(2);
     }
     return result;
@@ -288,11 +294,13 @@ static Obj DoCallJuliaCFunc2Arg(Obj func, Obj arg1, Obj arg2)
 static Obj DoCallJuliaCFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    JL_TRY
+    {
         result = function(arg1, arg2, arg3);
     }
-    JL_CATCH {
+    JL_CATCH
+    {
         HandleJuliaCFuncException(3);
     }
     return result;
@@ -302,11 +310,13 @@ static Obj
 DoCallJuliaCFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    JL_TRY
+    {
         result = function(arg1, arg2, arg3, arg4);
     }
-    JL_CATCH {
+    JL_CATCH
+    {
         HandleJuliaCFuncException(4);
     }
     return result;
@@ -316,11 +326,13 @@ static Obj DoCallJuliaCFunc5Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    JL_TRY
+    {
         result = function(arg1, arg2, arg3, arg4, arg5);
     }
-    JL_CATCH {
+    JL_CATCH
+    {
         HandleJuliaCFuncException(5);
     }
     return result;
@@ -330,11 +342,13 @@ static Obj DoCallJuliaCFunc6Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    JL_TRY
+    {
         result = function(arg1, arg2, arg3, arg4, arg5, arg6);
     }
-    JL_CATCH {
+    JL_CATCH
+    {
         HandleJuliaCFuncException(6);
     }
     return result;
@@ -382,9 +396,7 @@ Obj NewJuliaCFunc(void * function, Obj arg_names)
     return func;
 }
 
-Obj Func_NewJuliaCFunc(Obj self,
-                       Obj julia_function_ptr,
-                       Obj arg_names)
+Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj arg_names)
 {
     jl_value_t * func_ptr = GET_JULIA_OBJ(julia_function_ptr);
     void *       ptr = jl_unbox_voidpointer(func_ptr);
@@ -480,7 +492,10 @@ Obj Func_JuliaFunction(Obj self, Obj func, Obj autoConvert)
  * Returns the function with name <function_name> from the Julia module with
  * name <module_name>.
  */
-Obj Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name, Obj autoConvert)
+Obj Func_JuliaFunctionByModule(Obj self,
+                               Obj function_name,
+                               Obj module_name,
+                               Obj autoConvert)
 {
     jl_module_t * module_t = get_module_from_string(CSTR_STRING(module_name));
     jl_function_t * function =
@@ -490,6 +505,9 @@ Obj Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name, Obj
     return NewJuliaFunc(function, autoConvert == True);
 }
 
+// FuncJuliaEvalString( NULL, string )
+//
+// Executes the string <string> in the current julia session.
 Obj FuncJuliaEvalString(Obj self, Obj string)
 {
     char * current = CSTR_STRING(string);
@@ -500,6 +518,10 @@ Obj FuncJuliaEvalString(Obj self, Obj string)
     return NewJuliaObj(result);
 }
 
+// Func_ConvertedFromJulia_internal( julia_obj )
+//
+// Converts the julia value pointer <julia_obj> into a GAP object
+// if possible.
 Obj Func_ConvertedFromJulia_internal(jl_value_t * julia_obj)
 {
     size_t i;
@@ -589,6 +611,10 @@ Obj Func_ConvertedFromJulia_internal(jl_value_t * julia_obj)
     return Fail;
 }
 
+// Func_ConvertedFromJulia( NULL, obj )
+//
+// Converts the julia object GAP object <obj> into a GAP object
+// if possible.
 Obj Func_ConvertedFromJulia(Obj self, Obj obj)
 {
     if (!IS_JULIA_OBJ(obj)) {
@@ -683,6 +709,9 @@ jl_value_t * Func_ConvertedToJulia_internal(Obj obj)
     return (jl_value_t *)(obj);
 }
 
+// Converts the GAP object <obj> into a suitable
+// julia object GAP object, if possible, and returns that
+// object. If the conversion is not possible, the function returns fail.
 Obj Func_ConvertedToJulia(Obj self, Obj obj)
 {
     if (IS_JULIA_OBJ(obj) || IS_JULIA_FUNC(obj)) {
@@ -751,6 +780,9 @@ Obj Func_ConvertedFromJulia_record_dict(Obj self, Obj dict)
     return return_list;
 }
 
+// Converts the GAP list <list> into a julia tuple
+// and returns the julia object GAP object which holds
+// the pointer to that tuple.
 Obj FuncJuliaTuple(Obj self, Obj list)
 {
     jl_datatype_t * tuple_type = 0;
@@ -779,6 +811,8 @@ Obj FuncJuliaTuple(Obj self, Obj list)
     return NewJuliaObj(result);
 }
 
+// Returns a julia object GAP object that holds
+// the pointer to a julia symbol :<name>.
 Obj FuncJuliaSymbol(Obj self, Obj name)
 {
     jl_sym_t * julia_symbol = jl_symbol(CSTR_STRING(name));
@@ -786,6 +820,8 @@ Obj FuncJuliaSymbol(Obj self, Obj name)
     return NewJuliaObj((jl_value_t *)julia_symbol);
 }
 
+// Returns a julia object GAP object that holds
+// the pointer to the julia module <name>.
 Obj FuncJuliaModule(Obj self, Obj name)
 {
     jl_module_t * julia_module = get_module_from_string(CSTR_STRING(name));
@@ -793,6 +829,9 @@ Obj FuncJuliaModule(Obj self, Obj name)
     return NewJuliaObj((jl_value_t *)julia_module);
 }
 
+// Sets the value of the julia identifier <name>
+// to the julia value the julia object GAP object <julia_val>
+// points to.
 Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
 {
     jl_value_t * julia_obj = GET_JULIA_OBJ(julia_val);
@@ -803,6 +842,8 @@ Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
     return 0;
 }
 
+// Returns the julia object GAP object that holds a pointer
+// to the value currently bound to the julia identifier <name>.
 Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 {
     jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
@@ -814,6 +855,8 @@ Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
     return NewJuliaObj(value);
 }
 
+// Returns the julia object GAP object that holds a pointer
+// to the value currently bound to the julia identifier <module_name>.<name>.
 Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
     jl_module_t * module_t = 0;
@@ -835,6 +878,9 @@ Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
     return NewJuliaObj(value);
 }
 
+// Returns the julia object GAP object that holds a pointer
+// to the value currently bound to <super_object>.<name>.
+// <super_object> must be a julia object GAP object, and <name> a string.
 Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 {
     jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
@@ -844,6 +890,9 @@ Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     return NewJuliaObj(field_value);
 }
 
+// Sets the GAP function <func> as a GAP.GapFunc object to GAP.<name>.
+// <number_args> must be the number of arguments of <func>. Is is then
+// callable on GAP.GapObj's from julia.
 Obj Func_JuliaSetGAPFuncAsJuliaObjFunc(Obj self,
                                        Obj func,
                                        Obj name,
@@ -915,7 +964,8 @@ Obj Func_JuliaIsNothing(Obj self, Obj obj)
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaFunction, 2, "string, autoConvert"),
-    GVAR_FUNC(_JuliaFunctionByModule, 3, "function_name, module_name, autoConvert"),
+    GVAR_FUNC(
+        _JuliaFunctionByModule, 3, "function_name, module_name, autoConvert"),
 
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(_ConvertedFromJulia, 1, "obj"),
