@@ -3,8 +3,10 @@ import Base: convert, getindex, setindex!, length, show
 const True = GAP.Globals.ReturnTrue()
 const False = GAP.Globals.ReturnFalse()
 
-const GAPInputType_noint = Union{MPtr,GAP.GapFFE}
+const GAPInputType_noint = Union{MPtr,GAP.GapFFE,Bool}
 const GAPInputType = Union{GAPInputType_noint,Int64}
+
+const GAPObj = Union{GAPInputType,Nothing}
 
 function Base.show( io::IO, obj::Union{MPtr,GAP.GapFFE} )
     str = GAP.Globals.String( obj )
